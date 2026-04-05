@@ -21,6 +21,7 @@
 // Sumanta Guha. (Modified for bouncing ball simulation)
 ///////////////////////////////////////////////////////////////////////////////////
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -38,19 +39,19 @@ static float v = 4.0;              // Initial vertical velocity (saved for reset
 static float g = 0.2;              // Gravitational acceleration.
 
 // Bouncing physics variables.
-static float currentVelocityY = 4.0;  // Current vertical velocity at start of each bounce arc.
-static float xOffset = 0.0;           // Accumulated horizontal displacement across bounces.
-static float restitution = 0.7;       // Coefficient of restitution (energy loss per bounce).
+static float currentVelocityY = 4.0f;  // Current vertical velocity at start of each bounce arc.
+static float xOffset = 0.0f;           // Accumulated horizontal displacement across bounces.
+static float restitution = 0.7f;       // Coefficient of restitution (energy loss per bounce).
 static int isStopped = 0;             // Whether the ball has come to rest.
 static float restX = 0.0;             // X position where ball came to rest.
 
 static char theStringBuffer[10]; // String buffer.
-static long font = (long)GLUT_BITMAP_8_BY_13; // Font selection.
+static void* font = GLUT_BITMAP_8_BY_13; // Font selection.
 
 // Routine to draw a bitmap character string.
-void writeBitmapString(void *font, char *string)
+void writeBitmapString(void *font, const char *string)
 {
-    char *c;
+    const char *c;
 
 	for (c = string; *c != '\0'; c++) glutBitmapCharacter(font, *c);
 }
@@ -65,39 +66,39 @@ void floatToString(char * destStr, int precision, float val)
 // Write data.
 void writeData(void)
 {
-	glColor3f(0.0, 0.0, 0.0);
+	glColor3f(0.0f, 0.0f, 0.0f);
 
 	floatToString(theStringBuffer, 4, h);
-	glRasterPos3f(-4.5, 4.5, -5.1);
-	writeBitmapString((void*)font, "Horizontal velocity: ");
-	writeBitmapString((void*)font, theStringBuffer);
+	glRasterPos3f(-4.5f, 4.5f, -5.1f);
+	writeBitmapString(font, "Horizontal velocity: ");
+	writeBitmapString(font, theStringBuffer);
 
 	floatToString(theStringBuffer, 4, currentVelocityY);
-	glRasterPos3f(-4.5, 4.2, -5.1);
-	writeBitmapString((void*)font, "Current vertical velocity: ");
-	writeBitmapString((void*)font, theStringBuffer);
+	glRasterPos3f(-4.5f, 4.2f, -5.1f);
+	writeBitmapString(font, "Current vertical velocity: ");
+	writeBitmapString(font, theStringBuffer);
 
 	floatToString(theStringBuffer, 4, g);
-	glRasterPos3f(-4.5, 3.9, -5.1);
-	writeBitmapString((void*)font, "Gravitation: ");
-	writeBitmapString((void*)font, theStringBuffer);
+	glRasterPos3f(-4.5f, 3.9f, -5.1f);
+	writeBitmapString(font, "Gravitation: ");
+	writeBitmapString(font, theStringBuffer);
 
 	floatToString(theStringBuffer, 4, restitution);
-	glRasterPos3f(-4.5, 3.6, -5.1);
-	writeBitmapString((void*)font, "Restitution: ");
-	writeBitmapString((void*)font, theStringBuffer);
+	glRasterPos3f(-4.5f, 3.6f, -5.1f);
+	writeBitmapString(font, "Restitution: ");
+	writeBitmapString(font, theStringBuffer);
 }
 
 // Draw a ground line for visual clarity.
 void drawGround(void)
 {
-	glColor3f(0.3, 0.6, 0.3); // Green ground line.
-	glLineWidth(2.0);
+	glColor3f(0.3f, 0.6f, 0.3f); // Green ground line.
+	glLineWidth(2.0f);
 	glBegin(GL_LINES);
-		glVertex3f(0.0, 0.0, 0.0);    // Ground is at y = 0 in scene coords.
-		glVertex3f(40.0, 0.0, 0.0);   // Extend far to the right.
+		glVertex3f(0.0f, 0.0f, 0.0f);    // Ground is at y = 0 in scene coords.
+		glVertex3f(40.0f, 0.0f, 0.0f);   // Extend far to the right.
 	glEnd();
-	glLineWidth(1.0);
+	glLineWidth(1.0f);
 }
 
 // Drawing routine.
@@ -109,7 +110,7 @@ void drawScene(void)
 	writeData();
 
 	// Place scene in frustum: shift so y=0 is near the bottom of the view.
-	glTranslatef(-15.0, -15.0, -25.0);
+	glTranslatef(-15.0f, -15.0f, -25.0f);
 
 	// Draw the ground line at y = 0.
 	drawGround();
@@ -129,19 +130,19 @@ void drawScene(void)
 		currentX = xOffset + h * t;
 
 		// Vertical: y = vY * t - (g/2) * t^2 (standard projectile equation).
-		currentY = currentVelocityY * t - (g / 2.0) * t * t;
+		currentY = currentVelocityY * t - (g / 2.0f) * t * t;
 
 		// Clamp ball so it never visually goes below ground.
-		if (currentY < 0.0) currentY = 0.0;
+		if (currentY < 0.0f) currentY = 0.0f;
 	}
 
 	// Position and draw the ball.
 	glPushMatrix();
-	glTranslatef(currentX, currentY, 0.0);
-	glColor3f(0.8, 0.2, 0.2); // Red rubber ball.
+	glTranslatef(currentX, currentY, 0.0f);
+	glColor3f(0.8f, 0.2f, 0.2f); // Red rubber ball.
 	glutSolidSphere(1.0, 20, 20);
 	// Wire overlay for visual detail.
-	glColor3f(0.5, 0.1, 0.1);
+	glColor3f(0.5f, 0.1f, 0.1f);
 	glutWireSphere(1.02, 12, 12);
 	glPopMatrix();
 
@@ -158,7 +159,7 @@ void animate(int value)
 			t += 0.5; // Time step increment.
 
 			// Compute current vertical position: y = vY * t - (g/2) * t^2
-			float currentY = currentVelocityY * t - (g / 2.0) * t * t;
+			float currentY = currentVelocityY * t - (g / 2.0f) * t * t;
 
 			// Ground collision detection: ball hits ground when y <= 0 (after launch).
 			if (currentY <= 0.0 && t > 0.0)
@@ -195,7 +196,7 @@ void animate(int value)
 // Initialization routine.
 void setup(void)
 {
-	glClearColor(1.0, 1.0, 1.0, 0.0);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 // OpenGL window reshape routine.
@@ -243,12 +244,12 @@ void keyInput(unsigned char key, int x, int y)
 // Callback routine for non-ASCII key entry.
 void specialKeyInput(int key, int x, int y)
 {
-	if (key == GLUT_KEY_UP) { v += 0.05; currentVelocityY = v; }
-	if (key == GLUT_KEY_DOWN) { if (v > 0.1) v -= 0.05; currentVelocityY = v; }
-	if (key == GLUT_KEY_RIGHT) h += 0.05;
-	if (key == GLUT_KEY_LEFT) { if (h > 0.1) h -= 0.05; }
-	if (key == GLUT_KEY_PAGE_UP) g += 0.05;
-	if (key == GLUT_KEY_PAGE_DOWN) { if (g > 0.1) g -= 0.05; }
+	if (key == GLUT_KEY_UP) { v += 0.05f; currentVelocityY = v; }
+	if (key == GLUT_KEY_DOWN) { if (v > 0.1f) v -= 0.05f; currentVelocityY = v; }
+	if (key == GLUT_KEY_RIGHT) h += 0.05f;
+	if (key == GLUT_KEY_LEFT) { if (h > 0.1f) h -= 0.05f; }
+	if (key == GLUT_KEY_PAGE_UP) g += 0.05f;
+	if (key == GLUT_KEY_PAGE_DOWN) { if (g > 0.1f) g -= 0.05f; }
 
 	glutPostRedisplay();
 }
